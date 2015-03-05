@@ -10,6 +10,26 @@ This is fork of [mitchellh/gox](https://github.com/mitchellh/gox).
 It looks original will not be added new features and pull requests are
 remained. This fork adds feature what I want in gox.
 
+## Additional features
+
+This fork has some additional features which original doesn't have.
+
+You can set target OS/Arch by environmental variables, 
+
+```bash
+$ export GOX_OS="darwin linux windows"
+$ export GOX_ARCH="386 amd64"
+$ gox
+Number of parallel builds: 8
+
+-->      darwin/386: github.com/tcnksm/ghr
+-->    darwin/amd64: github.com/tcnksm/ghr
+-->       linux/386: github.com/tcnksm/ghr
+-->     linux/amd64: github.com/tcnksm/ghr
+-->     windows/386: github.com/tcnksm/ghr
+-->   windows/amd64: github.com/tcnksm/ghr
+```
+
 ## Installation
 
 To install Gox, please use `go get`. We tag versions so feel free to

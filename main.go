@@ -9,6 +9,10 @@ import (
 	"sync"
 )
 
+// These env variables are used to decide build target
+var EnvOS = "GOX_OS"
+var EnvArch = "GOX_ARCH"
+
 func main() {
 	// Call realMain so that defers work properly, since os.Exit won't
 	// call defers.
@@ -16,11 +20,35 @@ func main() {
 }
 
 func realMain() int {
+	// Read env variables
+	var platformFlag PlatformFlag
+
+	if strArch := os.Getenv(EnvArch); strArch != "" {
+		var values appendStringValue
+		err := values.Set(strArch)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to set Arch variable: %s\n", strArch)
+			return 1
+		}
+
+		platformFlag.Arch = values
+	}
+
+	if strOS := os.Getenv(EnvOS); strOS != "" {
+		var values appendStringValue
+		err := values.Set(strOS)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to set OS variable: %s\n", strOS)
+			return 1
+		}
+
+		platformFlag.OS = values
+	}
+
 	var buildToolchain bool
 	var ldflags string
 	var outputTpl string
 	var parallel int
-	var platformFlag PlatformFlag
 	var tags string
 	var verbose bool
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
@@ -34,6 +62,7 @@ func realMain() int {
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
+
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
 		return 1
